@@ -62,6 +62,7 @@ dkms.conf
 *Parser.java
 *Visitor.java
 *Lexer.java
+*.class
 
 .DS_Store
 
