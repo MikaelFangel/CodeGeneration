@@ -1,0 +1,14 @@
+double b;
+int y;
+double result;
+
+b=3.0;
+y=100;
+// compute b^y
+//result=1.0;
+//while (y>0){
+  result=result*b;
+  y=y-1;
+//}
+
+//output(result);
