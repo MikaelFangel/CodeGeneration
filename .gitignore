@@ -51,4 +51,19 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-DS_STORE
+# Antlr
+*.interp
+*.tokens
+
+*BaseListener.java
+*BaseVisitor.java
+*Lexer.java
+*Listener.java
+*Parser.java
+*Visitor.java
+*Lexer.java
+
+.DS_Store
+
+*.idea
+HardwareSim.iml
