@@ -16,3 +16,5 @@ test:	main.class
 	clang -O3 compiler_output.ll
 	./a.out
 
+clean:
+	rm -rf *.class *.tokens *.interp compiler*.java
