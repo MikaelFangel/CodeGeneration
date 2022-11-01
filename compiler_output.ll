@@ -27,24 +27,40 @@ declare i8* @malloc(i64) #1
 
 define i64 @main() nounwind ssp {
 
-%1 = call i8* @malloc(i64 0)
-%b = bitcast i8* %1 to i64*
-%2 = call i8* @malloc(i64 0)
-%y = bitcast i8* %2 to i64*
-%3 = call i8* @malloc(i64 0)
-%result = bitcast i8* %3 to i64*
-%4= add i64 0, 3
-store i64 %4, i64* %b
-%5= add i64 0, 3
-store i64 %5, i64* %y
-%6= add i64 0, 1
-store i64 %6, i64* %result
+%b = alloca f64
+store f64 0, f64* %b
+%y = alloca i64
+store i64 0, i64* %y
+%result = alloca f64
+store f64 0, f64* %result
+%1= add f64 0, 3.0
+store f64 %1, f64* %b
+%2= add i64 0, 3
+store i64 %2, i64* %y
+%3= add f64 0, 1.0
+store f64 %3, f64* %result
+br label %Label1
+
+Label1:
+%4= load i64, i64* %y
+%5= add i64 0, 0
+%6= icmp sgt i64 %4, %5
+br i1 %6, label %Label2, label %Label3
+
+Label2:
 %7= load i64, i64* %result
 %8= load i64, i64* %b
-%9= mul nsw i64 %7, %8
-store i64 %9, i64* %result
-%10= load i64, i64* %result
-call void @print(i64 %10)
+%9= mul nsw f64 %7, %8
+store f64 %9, f64* %result
+%10= load i64, i64* %y
+%11= add i64 0, 1
+%12= sub nsw i64 %10, %11
+store i64 %12, i64* %y
+br label %Label1
+
+Label3:
+%13= load i64, i64* %result
+call void @print(f64 %13)
 ret i64 0
 }
 

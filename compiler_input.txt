@@ -1,14 +1,14 @@
-int b;
+double b;
 int y;
-int result;
+double result;
 
-b=3;
+b=3.0;
 y=3;
 // compute b^y
-result=1;
-//while (y>0){
+result=1.0;
+while (y>0){
   result=result*b;
-//  y=y-1;
-//}
+  y=y-1;
+}
 
 output(result);
