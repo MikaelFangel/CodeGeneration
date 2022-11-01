@@ -27,24 +27,24 @@ declare i8* @malloc(i64) #1
 
 define i64 @main() nounwind ssp {
 
-%b = alloca i64
-store i64 0, i64* %b
-%y = alloca i64
-store i64 0, i64* %y
-%result = alloca i64
-store i64 0, i64* %result
-%1= add i64 0, 3
-store i64 %1, i64* %b
-%2= add i64 0, 3
-store i64 %2, i64* %y
-%3= add i64 0, 1
-store i64 %3, i64* %result
-%4= load i64, i64* %result
-%5= load i64, i64* %b
-%6= mul nsw i64 %4, %5
+%1 = call i8* @malloc(i64 0)
+%b = bitcast i8* %1 to i64*
+%2 = call i8* @malloc(i64 0)
+%y = bitcast i8* %2 to i64*
+%3 = call i8* @malloc(i64 0)
+%result = bitcast i8* %3 to i64*
+%4= add i64 0, 3
+store i64 %4, i64* %b
+%5= add i64 0, 3
+store i64 %5, i64* %y
+%6= add i64 0, 1
 store i64 %6, i64* %result
 %7= load i64, i64* %result
-call void @print(i64 %7)
+%8= load i64, i64* %b
+%9= mul nsw i64 %7, %8
+store i64 %9, i64* %result
+%10= load i64, i64* %result
+call void @print(i64 %10)
 ret i64 0
 }
 

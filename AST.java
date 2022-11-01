@@ -279,12 +279,10 @@ class DoubleConst extends Expr {
   public Double v;
   DoubleConst(Double v) { this.v = v; }
   public Type typecheck(Environment env) {
-    faux.error("Implement me.\n");
-    return null;
+    return Type.DOUBLETYPE;
   }
   public String compile(Environment env) {
-    faux.error("Implement me.\n");
-    return null;
+    return env.newvar() + "= add f64 0, " + v + "\n";
   }
 }
 
@@ -292,9 +290,10 @@ class Variable extends Expr {
   public String varname;
   Variable(String varname) { this.varname = varname; }
   public Type typecheck(Environment env) {
-    if (env.getVariable(varname) != Type.INTTYPE)
-      faux.error("Only integer supported\n");
-    return Type.INTTYPE;
+    Type varType = env.getVariable(varname);
+    if (varType != Type.INTTYPE && varType != Type.DOUBLETYPE)
+      faux.error("Only integer and double supported\n");
+    return varType;
   }
   public String compile(Environment env) {
     return env.newvar() + "= load i64, i64* %" + varname + "\n";
