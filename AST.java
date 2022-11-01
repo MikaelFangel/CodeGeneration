@@ -63,24 +63,39 @@ class Sequence extends Command {
 class Assignment extends Command {
   public String x;
   public Expr e;
+  private Type type;
   Assignment(String x, Expr e) {
     this.x = x;
     this.e = e;
   }
   public void typecheck(Environment env) {
-    if (env.getVariable(x) != Type.INTTYPE || e.typecheck(env) != Type.INTTYPE)
-      faux.error("Assignment: must be integers for now.\n");
+    Type xVar = env.getVariable(x);
+    Type eType = e.typecheck(env);
+
+    if ((xVar != Type.INTTYPE && xVar != Type.DOUBLETYPE) || (eType != Type.INTTYPE && eType != Type.DOUBLETYPE))
+        faux.error("Assignment: must for either integer or double \n");
+
+    if (xVar != eType)
+      faux.error("Assignment: must be of the same type.\n");
+
+    type = xVar;
   }
   public String compile(Environment env) {
     String s = e.compile(env);
     String active = env.activevar();
-    return s + "store i64 " + active + ", i64* %" + x + "\n";
+
+    return switch(type) {
+        case INTTYPE -> s + "store i64 " + active + ", i64* %" + x + "\n";
+        case DOUBLETYPE -> s + "store f64 " + active + ", f64* %" + x + "\n";
+        default -> null;
+    };
   }
 }
 
 class Alloc extends Command {
   String v;
   Integer size;
+  Type type;
   Alloc(String v) {
     this.v = v;
     this.size = 0;
@@ -90,19 +105,30 @@ class Alloc extends Command {
     this.size = size;
   }
   public void typecheck(Environment env) {
-    if (env.getVariable(v) != Type.INTTYPE &&
-        env.getVariable(v) != Type.INTARRAYTYPE)
-      faux.error("Currenty implemented only for INT.\n");
+    Type vType = env.getVariable(v);
+    if (vType != Type.INTTYPE && vType != Type.INTARRAYTYPE &&
+        vType != Type.DOUBLETYPE && vType != Type.DOUBLEARRAYTYPE)
+      faux.error("Currenty implemented only for INT and DOUBLE.\n");
+    
+    type = vType;
   }
   public String compile(Environment env) {
-    if (env.getVariable(v) != Type.INTTYPE) {
-      return "%" + v + " = alloca i64\n"
-          + "store i64 0, i64* %" + v + "\n";
-    } else {
+    return switch(type) {
+        case INTTYPE -> "%" + v + " = alloca i64\n" + "store i64 0, i64* %" + v + "\n";
+        case INTARRAYTYPE -> compileArrString(env);
+        case DOUBLETYPE -> "%" + v + " = alloca f64\n" + "store f64 0, f64* %" + v + "\n";
+        case DOUBLEARRAYTYPE -> compileArrString(env);
+        default -> null;
+    };
+  }
+
+  private String compileArrString(Environment env) {
       String tmp = env.newvar();
-      return tmp + " = call i8* @malloc(i64 " + 8 * size + ")\n"
-          + "%" + v + " = bitcast i8* " + tmp + " to i64*\n";
-    }
+      return switch(type) {
+          case INTARRAYTYPE -> tmp + " = call i8* @malloc(i64 " + 8 * size + ")\n" + "%" + v + " = bitcast i8* " + tmp + " to i64*\n";
+          case DOUBLEARRAYTYPE -> tmp + " = call f8* @malloc(f64 " + 8 * size + ")\n" + "%" + v + " = bitcast f8* " + tmp + " to f64*\n";
+          default -> null;
+  };
   }
 }
 
